@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import TransactionForm from "../components/TransactionForm";
 import TransactionList from "../components/TransactionList";
 import Charts from "../components/Charts";
+import { Link } from "react-router-dom";
 
 const money = (n) => `Rs ${Number(n).toLocaleString()}`;
 
@@ -47,7 +48,10 @@ export default function Dashboard() {
     <div className="container">
       <header className="topbar">
         <h2>Expense Tracker</h2>
-        <div>
+                <div>
+          <Link to="/reports" style={{ color: "#818cf8", marginRight: 16, textDecoration: "none" }}>
+            Reports
+          </Link>
           <span className="muted">Hi, {user.name}</span>
           <button className="btn small" onClick={logout}>Logout</button>
         </div>
