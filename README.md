@@ -1,4 +1,4 @@
-# FinTrack: Personal Finance & Expense Management
+﻿# FinTrack: Personal Finance & Expense Management
 
 A full-stack finance web app to track income and expenses, set monthly category budgets, and understand spending through charts and reports. Built with React, Node.js, Express and MongoDB.
 
@@ -12,15 +12,15 @@ A full-stack finance web app to track income and expenses, set monthly category 
 
 | Landing | Dashboard |
 |---|---|
-| ![Landing](screenshots/landing.png) | ![Dashboard](screenshots/dashboard.png) |
+| ![Landing](screenshot/landingpage.png) | ![Dashboard](screenshot/dashboard.png) |
 
 | Transactions | Budgets |
 |---|---|
-| ![Transactions](screenshots/transactions.png) | ![Budgets](screenshots/budgets.png) |
+| ![Transactions](screenshot/Transcations.png) | ![Budgets](screenshot/budgets.png) |
 
-| Reports | Mobile |
+| Reports | Login |
 |---|---|
-| ![Reports](screenshots/reports.png) | ![Mobile](screenshots/mobile.png) |
+| ![Reports](screenshot/reportpage.png) | ![Login](screenshot/login.png) |
 
 ## Features
 
@@ -71,19 +71,19 @@ A full-stack finance web app to track income and expenses, set monthly category 
 
 ```
 expense-tracker/
-├── backend/
-│   ├── config/          # database connection
-│   ├── controllers/     # auth, transactions, budgets
-│   ├── middleware/      # JWT protection
-│   ├── models/          # User, Transaction, Budget
-│   ├── routes/
-│   └── server.js
-└── frontend/
-    └── src/
-        ├── components/  # Layout, Modal, Toast, Charts, forms
-        ├── context/     # AuthContext
-        ├── pages/       # Landing, Auth, Dashboard, Transactions, Budgets, Reports
-        └── api.js       # Axios instance with token interceptor
+â”œâ”€â”€ backend/
+â”‚   â”œâ”€â”€ config/          # database connection
+â”‚   â”œâ”€â”€ controllers/     # auth, transactions, budgets
+â”‚   â”œâ”€â”€ middleware/      # JWT protection
+â”‚   â”œâ”€â”€ models/          # User, Transaction, Budget
+â”‚   â”œâ”€â”€ routes/
+â”‚   â””â”€â”€ server.js
+â””â”€â”€ frontend/
+    â””â”€â”€ src/
+        â”œâ”€â”€ components/  # Layout, Modal, Toast, Charts, forms
+        â”œâ”€â”€ context/     # AuthContext
+        â”œâ”€â”€ pages/       # Landing, Auth, Dashboard, Transactions, Budgets, Reports
+        â””â”€â”€ api.js       # Axios instance with token interceptor
 ```
 
 ## API Endpoints
@@ -94,6 +94,7 @@ All routes except register and login require `Authorization: Bearer <token>`.
 |---|---|---|
 | POST | `/api/auth/register` | Create an account |
 | POST | `/api/auth/login` | Login and receive a token |
+| GET | `/api/auth/me` | Get the logged-in user |
 | GET | `/api/transactions` | List transactions (optional filters) |
 | POST | `/api/transactions` | Add a transaction |
 | PUT | `/api/transactions/:id` | Update a transaction |
@@ -170,4 +171,4 @@ Both apps are deployed on Vercel as two separate projects from this repository.
 
 ## Author
 
-**Umair Naseem** — Full-stack developer, built during the Auspify internship.
+**Umair Naseem** â€” Full-stack developer, built during the Auspify internship.
