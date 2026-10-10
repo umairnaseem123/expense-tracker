@@ -1,26 +1,39 @@
 import { useEffect, useState } from "react";
 import api from "../api";
+import Modal from "./Modal";
 
-const CATEGORIES = [
+export const CATEGORIES = [
   "Salary", "Food", "Transport", "Shopping", "Bills",
   "Health", "Education", "Entertainment", "Other",
 ];
 
-const empty = {
+const makeEmpty = () => ({
   type: "expense",
   title: "",
   amount: "",
   category: "Food",
   date: new Date().toISOString().slice(0, 10),
   note: "",
+});
+
+const validate = (f) => {
+  const e = {};
+  if (!f.title.trim()) e.title = "Title is required";
+  if (!f.amount || Number(f.amount) <= 0) e.amount = "Enter an amount greater than 0";
+  if (!f.date) e.date = "Pick a date";
+  return e;
 };
 
-export default function TransactionForm({ editing, onSaved, onCancel }) {
-  const [form, setForm] = useState(empty);
-  const [error, setError] = useState("");
+export default function TransactionForm({ open, editing, onClose, onSaved }) {
+  const [form, setForm] = useState(makeEmpty());
+  const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (!open) return;
+    setErrors({});
+    setServerError("");
     if (editing) {
       setForm({
         type: editing.type,
@@ -31,88 +44,113 @@ export default function TransactionForm({ editing, onSaved, onCancel }) {
         note: editing.note || "",
       });
     } else {
-      setForm(empty);
+      setForm(makeEmpty());
     }
-  }, [editing]);
+  }, [open, editing]);
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: undefined });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    const found = validate(form);
+    setErrors(found);
+    if (Object.keys(found).length) return;
+
     setLoading(true);
+    setServerError("");
     try {
-      const payload = { ...form, amount: Number(form.amount) };
-      if (editing) {
-        await api.put(`/transactions/${editing._id}`, payload);
-      } else {
-        await api.post("/transactions", payload);
-      }
-      setForm(empty);
-      onSaved();
+      const payload = { ...form, title: form.title.trim(), amount: Number(form.amount) };
+      if (editing) await api.put(`/transactions/${editing._id}`, payload);
+      else await api.post("/transactions", payload);
+      onSaved(editing ? "Transaction updated" : "Transaction added");
     } catch (err) {
-      setError(err.response?.data?.message || "Could not save transaction");
+      const status = err.response?.status;
+      setServerError(
+        status === 400
+          ? err.response.data.message
+          : "Something went wrong while saving. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form className="card form-grid" onSubmit={handleSubmit}>
-      <h3 className="full">{editing ? "Edit transaction" : "Add transaction"}</h3>
+    <Modal open={open} title={editing ? "Edit transaction" : "Add transaction"} onClose={onClose}>
+      <form className="modal-form" onSubmit={handleSubmit} noValidate>
+        {serverError && <div className="error full">{serverError}</div>}
 
-      {error && <div className="error full">{error}</div>}
+        <div className="field">
+          <label>Type</label>
+          <select name="type" value={form.type} onChange={handleChange}>
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+          </select>
+        </div>
 
-      <select name="type" value={form.type} onChange={handleChange}>
-        <option value="expense">Expense</option>
-        <option value="income">Income</option>
-      </select>
+        <div className="field">
+          <label>Category</label>
+          <select name="category" value={form.category} onChange={handleChange}>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
 
-      <input
-        name="title"
-        placeholder="Title (e.g. Groceries)"
-        value={form.title}
-        onChange={handleChange}
-        required
-      />
+        <div className="field full">
+          <label>Title</label>
+          <input
+            name="title"
+            className={errors.title ? "input-invalid" : ""}
+            placeholder="e.g. Groceries"
+            value={form.title}
+            onChange={handleChange}
+          />
+          {errors.title && <div className="field-error">{errors.title}</div>}
+        </div>
 
-      <input
-        name="amount"
-        type="number"
-        min="0.01"
-        step="0.01"
-        placeholder="Amount"
-        value={form.amount}
-        onChange={handleChange}
-        required
-      />
+        <div className="field">
+          <label>Amount (Rs)</label>
+          <input
+            name="amount"
+            type="number"
+            min="0.01"
+            step="0.01"
+            className={errors.amount ? "input-invalid" : ""}
+            placeholder="0"
+            value={form.amount}
+            onChange={handleChange}
+          />
+          {errors.amount && <div className="field-error">{errors.amount}</div>}
+        </div>
 
-      <select name="category" value={form.category} onChange={handleChange}>
-        {CATEGORIES.map((c) => (
-          <option key={c} value={c}>{c}</option>
-        ))}
-      </select>
+        <div className="field">
+          <label>Date</label>
+          <input
+            name="date"
+            type="date"
+            className={errors.date ? "input-invalid" : ""}
+            value={form.date}
+            onChange={handleChange}
+          />
+          {errors.date && <div className="field-error">{errors.date}</div>}
+        </div>
 
-      <input name="date" type="date" value={form.date} onChange={handleChange} />
+        <div className="field full">
+          <label>Notes (optional)</label>
+          <input name="note" placeholder="Add a short note" value={form.note} onChange={handleChange} />
+        </div>
 
-      <input
-        name="note"
-        placeholder="Note (optional)"
-        value={form.note}
-        onChange={handleChange}
-      />
-
-      <div className="full row">
-        <button className="btn" disabled={loading}>
-          {loading ? "Saving..." : editing ? "Update" : "Add"}
-        </button>
-        {editing && (
-          <button type="button" className="btn ghost" onClick={onCancel}>
-            Cancel
+        <div className="full modal-actions">
+          <button type="button" className="btn ghost" onClick={onClose} disabled={loading}>Cancel</button>
+          <button className="btn" disabled={loading}>
+            {loading ? "Saving..." : editing ? "Save changes" : "Add transaction"}
           </button>
-        )}
-      </div>
-    </form>
+        </div>
+      </form>
+    </Modal>
   );
 }

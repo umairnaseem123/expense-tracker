@@ -1,16 +1,18 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { LayoutDashboard, FileBarChart, LogOut, Menu, X, Wallet } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, FileBarChart, LogOut, Menu, X, Wallet } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import "./Layout.css";
 
 const links = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/transactions", label: "Transactions", icon: ArrowLeftRight },
   { to: "/reports", label: "Reports", icon: FileBarChart },
 ];
 
 const titles = {
   "/dashboard": "Dashboard",
+  "/transactions": "Transactions",
   "/reports": "Reports",
 };
 

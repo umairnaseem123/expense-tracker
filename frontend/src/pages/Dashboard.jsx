@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { TrendingUp, TrendingDown, Wallet, PiggyBank, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { TrendingUp, TrendingDown, Wallet, PiggyBank, ArrowUpRight, ArrowDownRight, Plus } from "lucide-react";
 import api from "../api";
 import TransactionForm from "../components/TransactionForm";
-import TransactionList from "../components/TransactionList";
 import Charts from "../components/Charts";
+import Toast, { useToast } from "../components/Toast";
 
 const money = (n) => `Rs ${Number(n || 0).toLocaleString()}`;
 
@@ -49,9 +50,9 @@ function StatCard({ label, value, icon: Icon, tone, change, goodWhenUp = true, h
 export default function Dashboard() {
   const [summary, setSummary] = useState(null);
   const [all, setAll] = useState([]);
-  const [editing, setEditing] = useState(null);
-  const [typeFilter, setTypeFilter] = useState("");
+  const [formOpen, setFormOpen] = useState(false);
   const [error, setError] = useState("");
+  const { toast, show, hide } = useToast();
 
   const loadData = useCallback(async () => {
     try {
@@ -87,29 +88,37 @@ export default function Dashboard() {
     };
   }, [all]);
 
-  const list = typeFilter ? all.filter((t) => t.type === typeFilter) : all;
   const recent = all.slice(0, 5);
+  const closeForm = useCallback(() => setFormOpen(false), []);
 
-  const handleSaved = () => {
-    setEditing(null);
+  const handleSaved = (message) => {
+    setFormOpen(false);
+    show(message);
     loadData();
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete this transaction?")) return;
-    try {
-      await api.delete(`/transactions/${id}`);
-      loadData();
-    } catch {
-      setError("Could not delete the transaction. Please try again.");
-    }
   };
 
   return (
     <div className="container">
+      <div className="page-head">
+        <div>
+          <h2>Overview</h2>
+          <p className="muted">Your finances at a glance</p>
+        </div>
+        <button className="btn with-icon" onClick={() => setFormOpen(true)}>
+          <Plus size={16} /> Add transaction
+        </button>
+      </div>
+
       {error && <div className="error">{error}</div>}
 
-      {!summary && !error && <p className="muted">Loading your dashboard...</p>}
+      {!summary && !error && (
+        <div className="cards">
+          <div className="skeleton tall" />
+          <div className="skeleton tall" />
+          <div className="skeleton tall" />
+          <div className="skeleton tall" />
+        </div>
+      )}
 
       {summary && (
         <>
@@ -129,9 +138,18 @@ export default function Dashboard() {
           <Charts summary={summary} />
 
           <div className="card">
-            <div className="list-head"><h3>Recent transactions</h3></div>
+            <div className="list-head">
+              <h3>Recent transactions</h3>
+              <Link to="/transactions" className="link-more">View all</Link>
+            </div>
             {recent.length === 0 ? (
-              <p className="muted">No transactions yet. Add your first one below.</p>
+              <div className="empty">
+                <h4>No transactions yet</h4>
+                <p className="muted">Start tracking your finances by adding your first transaction.</p>
+                <button className="btn with-icon" onClick={() => setFormOpen(true)}>
+                  <Plus size={16} /> Add transaction
+                </button>
+              </div>
             ) : (
               <div className="recent">
                 {recent.map((t) => (
@@ -154,26 +172,8 @@ export default function Dashboard() {
         </>
       )}
 
-      <TransactionForm editing={editing} onSaved={handleSaved} onCancel={() => setEditing(null)} />
-
-      <div className="card">
-        <div className="list-head">
-          <h3>All transactions</h3>
-          <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-            <option value="">All</option>
-            <option value="income">Income</option>
-            <option value="expense">Expense</option>
-          </select>
-        </div>
-        <TransactionList
-          items={list}
-          onEdit={(t) => {
-            setEditing(t);
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
-          onDelete={handleDelete}
-        />
-      </div>
+      <TransactionForm open={formOpen} editing={null} onClose={closeForm} onSaved={handleSaved} />
+      <Toast toast={toast} onClose={hide} />
     </div>
   );
 }
