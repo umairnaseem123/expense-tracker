@@ -43,6 +43,7 @@
 .app-content .rp-wrap { max-width: 1100px; }
 .app-content .rp-head h1,
 .app-content .rp-back { display: none; }
+.app-content .container { max-width: none; margin: 0; }
 
 @media (max-width: 900px) {
   .app-sidebar { transform: translateX(-100%); }
