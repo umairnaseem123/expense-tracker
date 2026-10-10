@@ -14,8 +14,6 @@ export default function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Auth mode="login" />} />
       <Route path="/register" element={<Auth mode="register" />} />
-              <Route path="/budgets" element={<Budgets />} />
-      
       <Route
         element={
           <ProtectedRoute>
@@ -25,7 +23,7 @@ export default function App() {
       >
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/transactions" element={<Transactions />} />
-                <Route path="/budgets" element={<Budgets />} />
+        <Route path="/budgets" element={<Budgets />} />
         <Route path="/reports" element={<Reports />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
