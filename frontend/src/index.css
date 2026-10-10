@@ -102,3 +102,11 @@ input:focus, select:focus { outline: 2px solid var(--primary); border-color: tra
 }
 .icon-btn.danger { color: #fca5a5; }
 .icon-btn:hover { background: var(--card); }
+html, body { overflow-x: hidden; }
+
+@media (max-width: 600px) {
+  .container { padding-left: 14px; padding-right: 14px; }
+  .topbar { flex-wrap: wrap; gap: 10px; }
+  .topbar > div { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .cards, .charts { grid-template-columns: 1fr; }
+}
