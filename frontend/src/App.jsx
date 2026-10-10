@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import Landing from "./pages/Landing";
 import Reports from "./pages/Reports";
 import Transactions from "./pages/Transactions";
+import Budgets from "./pages/Budgets";
 
 export default function App() {
   return (
@@ -13,6 +14,8 @@ export default function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Auth mode="login" />} />
       <Route path="/register" element={<Auth mode="register" />} />
+              <Route path="/budgets" element={<Budgets />} />
+      
       <Route
         element={
           <ProtectedRoute>
@@ -22,6 +25,7 @@ export default function App() {
       >
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/transactions" element={<Transactions />} />
+                <Route path="/budgets" element={<Budgets />} />
         <Route path="/reports" element={<Reports />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

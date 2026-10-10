@@ -23,6 +23,7 @@ app.use(async (req, res, next) => {
 
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/transactions", require("./routes/transactionRoutes"));
+app.use("/api/budgets", require("./routes/budgetRoutes"));
 
 app.get("/", (req, res) => {
   res.json({ message: "Expense Tracker API running" });

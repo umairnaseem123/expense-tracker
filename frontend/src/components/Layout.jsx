@@ -1,18 +1,20 @@
 ﻿import { useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { LayoutDashboard, ArrowLeftRight, FileBarChart, LogOut, Menu, X, Wallet } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, PiggyBank, FileBarChart, LogOut, Menu, X, Wallet } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import "./Layout.css";
 
 const links = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/transactions", label: "Transactions", icon: ArrowLeftRight },
+    { to: "/budgets", label: "Budgets", icon: PiggyBank },
   { to: "/reports", label: "Reports", icon: FileBarChart },
 ];
 
 const titles = {
   "/dashboard": "Dashboard",
   "/transactions": "Transactions",
+    "/budgets": "Budgets",
   "/reports": "Reports",
 };
 
